@@ -1,5 +1,7 @@
 package com.iitu.library.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -14,7 +16,6 @@ public class UserRole {
 
     @OneToMany(mappedBy = "userRole")
     private List<User> users;
-
 
     public String getRole() {
         return role;

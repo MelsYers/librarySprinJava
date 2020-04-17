@@ -1,3 +1,4 @@
+/*
 package com.iitu.library.config;
 
 import org.springframework.context.annotation.ComponentScan;
@@ -9,3 +10,4 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("application.properties")
 public class SpringConfig {
 }
+*/

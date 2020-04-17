@@ -1,8 +1,11 @@
 package com.iitu.library.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "statusBook"})
 public class Book {
 
     @Id
