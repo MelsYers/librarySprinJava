@@ -3,7 +3,11 @@ package com.iitu.library.controller;
 
 import com.iitu.library.entity.User;
 import com.iitu.library.repository.UserRepository;
+import com.iitu.library.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,32 +17,51 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("")
     public List<User> getAllUsers(){
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id){
-        return userRepository.findById(id).get();
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello everyone!";
     }
 
-    @GetMapping("/find")
-    public List<User> getByUsernameContainingAndEmailContaining(@RequestParam String username, @RequestParam String email){
-        return userRepository.findAllByUsernameContainsAndEmailContains(username, email);
-    }
 
+    @GetMapping("/create")
+    public void createUserByUsernamePassword(String username,
+                                             String password) {
+        User user = new User();
+
+        user.setUsername(username);
+        user.setPassword(password);
+
+        createUser(user);
+    }
     @PostMapping("")
-    public User createUser(@RequestBody User user){
-        return userRepository.saveAndFlush(user);
+    public void createUser(@RequestBody User user){
+        System.out.println("UserController.createUser");
+        System.out.println("user = " + user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userService.createUser(user);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user){
-        user.setId(id);
-        return userRepository.save(user);
+    public void updateUser(@PathVariable Long id,
+                           @RequestBody User user) {
+
+        System.out.println("UserController.updateUser");
+        System.out.println("id = " + id);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("authentication.getName() = " + authentication.getName());
+
+        userService.updateUser(id, user);
     }
 
 }

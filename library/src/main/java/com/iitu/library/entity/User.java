@@ -1,25 +1,31 @@
 package com.iitu.library.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
 
 @Entity(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "userRole"})
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String username;
     private String password;
     private String email;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userRole_id")
-    private UserRole userRole;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "userRole",
+            joinColumns = {@JoinColumn(name="user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name="role_id", referencedColumnName = "id")})
+    private List<UserRole> userRole;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "UserBook",
@@ -40,8 +46,33 @@ public class User {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return userRole;
     }
 
     public String getPassword() {
@@ -60,13 +91,6 @@ public class User {
         this.email = email;
     }
 
-    public UserRole getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
-    }
 
     @Override
     public String toString() {
