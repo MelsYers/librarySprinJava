@@ -1,6 +1,6 @@
 Genre - @ManyToMany - Book
 StatusBook - @OneToMany - Book
 
-Role - @OneToMany - User
+Role - @ManyToMany - User
 
 Book - @ManyToMany - User
